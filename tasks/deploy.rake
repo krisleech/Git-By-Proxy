@@ -6,7 +6,7 @@ namespace :server do
   task :server_environment => [:environment] do
     deploy_file = File.join(RAILS_ROOT, 'config', 'deploy.yml')
     raise "#{deploy_file} missing" unless File.exists? deploy_file
-    settings = YAML::load(File.open(deploy_file))[RAILS_ENV]    
+    settings = YAML::load(File.open(deploy_file))[RAILS_ENV]
     @app_name = settings['app_name']
     @environment = settings['environment'] || RAILS_ENV
     @ssh_cmd = settings['ssh_cmd'] || 'ssh'
@@ -41,7 +41,7 @@ namespace :server do
   end
 
   desc 'Backup deployment'
-  task :backup => [:server_environment] do        
+  task :backup => [:server_environment] do
     remote_run @compress_cmd.gsub(':dest', "#{deploy_to}/../#{@app_name}_#{@environment}_#{Time.now.strftime('%d%m%Y%H%M%S')}").gsub(':src', deploy_to)
   end
 
@@ -60,6 +60,17 @@ namespace :server do
     remote_run ["cd #{deploy_to}", "git add .", "git commit -m 'UI Changes (via FTP)'", "git push"]
     puts "You now need to pull these changes (if any) from git to get them locally"
   end
+
+  # run usual db tasks on the server
+  namespace :db do
+    %w(create migrate drop reset).each do |name|
+      task name.to_sym => [:server_environment] do
+        remote_run ["cd #{deploy_to}", "rake db:#{name} RAILS_ENV=#{RAILS_ENV}"]
+      end
+    end
+  end
+
+
 
   task :deploy => [:update_code, :restart_app]
 end
