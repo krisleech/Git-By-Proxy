@@ -1,0 +1,55 @@
+Git by Proxy
+============
+
+== Description
+
+Simple rake tasks to rope in a graphic designer who doesn't want to use version control and (S)FTP's stuff up to the server instead, usually the public and views folders. Includes multi environment deployment.
+
+Made to scratch my own itch. 
+
+Author: Kris Leech ("moc.tcenokretni@hceel.sirk".reverse)
+Copyright: (c) 2009 Interkonect services UK Limited
+License: GNU
+
+== Installation ==
+
+git clone git://github.com/krisleech/Git-By-Proxy.git vendor/plugins/git_by_proxy
+
+== Assumptions ==
+
+You login in to the server with a ssh key
+Your using git and mod_rails
+Tested on Mac (client) and Ubuntu (server), but should work on any UNIX
+
+== Getting Started ==
+
+Create deploy.yml in 'config' folder with server_environment settings (see example)
+rake server:setup
+rake server:deploy 
+
+NB: It would be wise to set 'pretend' to true and see what commands will be executed before running this on a live server
+
+== Other tasks/examples ==
+
+rake server:setup RAILS_ENV=production
+rake server:deploy RAILS_ENV=production
+rake server:get_ui 
+rake server:restart_app (assumes passenger)
+rake server:update_code
+
+== Todo ==
+
+Can this be done better, please fork/suggest...
+Better name/description
+Extract more in to deploy.yml for configurability
+Add a symlinked shared folder of non-versioned files (eg. user uploads)
+Compress 'teardowns'
+Add cleanup task to remove old 'teardowns'
+Teardown should really teardown, and we should have separate 'backup' task
+Is there a way to automatically run 'server_environment' dependancy...
+Add logging on client and server side
+
+== License
+
+This library is licensed under the GNU General Public License (GPL)
+ [http://dev.perl.org/licenses/gpl1.html].
