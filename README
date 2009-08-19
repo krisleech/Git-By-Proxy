@@ -3,23 +3,24 @@ Git by Proxy
 
 == Description
 
-Simple rake tasks to rope in a graphic designer who doesn't want to use version control and (S)FTP's stuff up to the server instead, usually the public and views folders. Includes multi environment deployment.
+Simple rake tasks to rope in a graphic designer who doesn't want to use version control and (S)FTP's stuff up to the server instead (eg. file in the public and views folders). Includes multi environment deployment. But is intended to be used for collaborating on the staging version of a website. 
 
-Made to scratch my own itch. 
+Made to scratch my own itch.
 
 Author: Kris Leech ("moc.tcenokretni@hceel.sirk".reverse)
-Copyright: (c) 2009 Interkonect services UK Limited
+Copyright: (c) 2009 Interkonect Services UK Limited
 License: GNU
 
 == Installation ==
 
-git clone git://github.com/krisleech/Git-By-Proxy.git vendor/plugins/git_by_proxy
+From RAILS_ROOT: git clone git://github.com/krisleech/Git-By-Proxy.git vendor/plugins/git_by_proxy
 
 == Assumptions ==
 
+Your using RubyOnRails
 You login in to the server with a ssh key
 Your using git and mod_rails
-Tested on Mac (client) and Ubuntu (server), but should work on any UNIX
+Your on POSIX operating system (tested on Ubuntu/Mac)
 
 == Getting Started ==
 
@@ -49,7 +50,11 @@ Teardown should really teardown, and we should have separate 'backup' task
 Is there a way to automatically run 'server_environment' dependancy...
 Add logging on client and server side
 
+== Alternatives ==
+
+If you need multi-server deploys such as separate web, app & database servers you will need to use something like Vlad or Capistrano. However staging/development versions of sites don't usually have this requirement.
+
 == License
 
 This library is licensed under the GNU General Public License (GPL)
- [http://dev.perl.org/licenses/gpl1.html].
+[http://dev.perl.org/licenses/gpl1.html]
