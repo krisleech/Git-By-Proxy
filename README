@@ -44,9 +44,7 @@ Can this be done better, please fork/suggest...
 Better name/description
 Extract more in to deploy.yml for configurability
 Add a symlinked shared folder of non-versioned files (eg. user uploads)
-Compress 'teardowns'
-Add cleanup task to remove old 'teardowns'
-Teardown should really teardown, and we should have separate 'backup' task
+Add cleanup task to remove old 'backups'
 Is there a way to automatically run 'server_environment' dependancy...
 Add logging on client and server side
 

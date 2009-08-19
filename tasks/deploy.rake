@@ -6,7 +6,7 @@ namespace :server do
   task :server_environment => [:environment] do
     deploy_file = File.join(RAILS_ROOT, 'config', 'deploy.yml')
     raise "#{deploy_file} missing" unless File.exists? deploy_file
-    settings = YAML::load(File.open(deploy_file))[RAILS_ENV]
+    settings = YAML::load(File.open(deploy_file))[RAILS_ENV]    
     @app_name = settings['app_name']
     @environment = settings['environment'] || RAILS_ENV
     @ssh_cmd = settings['ssh_cmd'] || 'ssh'
@@ -14,6 +14,7 @@ namespace :server do
     @git_uri = settings['git_uri'] || "~/git/" + @app_name
     @git_repos = settings['git_repos'] || 'master'
     @pretend = settings['pretend'] || false
+    @compress_cmd = settings['compress_cmd'] || "zip -9r :dest.zip :src -x ':src/.git/*'"
   end
 
   # run a command on a remote server
@@ -36,7 +37,12 @@ namespace :server do
 
   desc 'Teardown on server'
   task :teardown => [:server_environment] do
-    remote_run "mv #{deploy_to} #{deploy_to}/../#{@environment}_#{Time.now.strftime('%d%m%Y%H%M%S')}"
+    remote_run "mv #{deploy_to} #{deploy_to}/../#{@app_name}_#{@environment}_#{Time.now.strftime('%d%m%Y%H%M%S')}"
+  end
+
+  desc 'Backup deployment'
+  task :backup => [:server_environment] do        
+    remote_run @compress_cmd.gsub(':dest', "#{deploy_to}/../#{@app_name}_#{@environment}_#{Time.now.strftime('%d%m%Y%H%M%S')}").gsub(':src', deploy_to)
   end
 
   desc 'Update code on server with latest from git'
