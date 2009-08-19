@@ -1,5 +1,15 @@
 # Please view README before using
 
+
+task :bootstrap => [:environment] do
+  %w(database.yml settings.yml).each do |file|
+    unless File.exists? File.join(RAILS_ROOT, 'config', file)
+      system "cp #{File.join(RAILS_ROOT, 'config', file.gsub('.','.example.'))} #{File.join(RAILS_ROOT, 'config', 'database.yml')}"
+    end
+  end
+end
+
+
 namespace :server do
 
   # Load our settings
@@ -17,13 +27,19 @@ namespace :server do
     @compress_cmd = settings['compress_cmd'] || "zip -9r :dest.zip :src -x ':src/.git/*'"
   end
 
-  # run a command on a remote server
+  # run a command on the server
   def remote_run(lines)
     lines = [lines] unless lines.is_a? Array
     command = @ssh_cmd + ' ' + '"' + lines.join(' && ') + '"'
     puts command
     system command unless @pretend
   end
+
+  # run a rake task on the server
+  def remote_task(task)
+    remote_run ["cd #{deploy_to}", "rake #{task} RAILS_ENV=#{RAILS_ENV}"]
+  end
+
 
   # build deploy path
   def deploy_to
@@ -59,18 +75,15 @@ namespace :server do
   task :get_ui => [:server_environment] do
     remote_run ["cd #{deploy_to}", "git add .", "git commit -m 'UI Changes (via FTP)'", "git push"]
     puts "You now need to pull these changes (if any) from git to get them locally"
-  end
+  end  
 
-  # run usual db tasks on the server
-  namespace :db do
-    %w(create migrate drop reset).each do |name|
-      task name.to_sym => [:server_environment] do
-        remote_run ["cd #{deploy_to}", "rake db:#{name} RAILS_ENV=#{RAILS_ENV}"]
-      end
+
+  # Run any rake task on the server (eg. rake server:db:create)
+  Rake.application.tasks.reject { |task| task.name.include? 'server' or task.name == 'environment'}.each do |task|  
+    task task.name.to_sym => [:server_environment] do
+      remote_task task.name
     end
   end
-
-
-
+  
   task :deploy => [:update_code, :restart_app]
 end
