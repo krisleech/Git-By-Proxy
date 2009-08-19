@@ -5,7 +5,7 @@ namespace :server do
   # Load our settings
   task :server_environment => [:environment] do
     deploy_file = File.join(RAILS_ROOT, 'config', 'deploy.yml')
-    raise "deploy.yml missing" unless File.exists? deploy_file
+    raise "#{deploy_file} missing" unless File.exists? deploy_file
     settings = YAML::load(File.open(deploy_file))[RAILS_ENV]
     @app_name = settings['app_name']
     @environment = settings['environment'] || RAILS_ENV
